@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrepOS</title>
+</head>
+<body>
+
+<h1>PrepOS</h1>
+
+<nav>
+    <button id="nav-setup">Setup</button>
+    <button id="nav-strategy">Strategy</button>
+    <button id="nav-chat">QA Chat</button>
+    <button id="nav-doubt">Doubt Solver</button>
+    <button id="nav-mock">Mock Exam</button>
+</nav>
+
+<hr>
+
+<!-- SETUP -->
+
+<div id="page-setup">
+
+    <h2>Setup — Configure your exam</h2>
+
+    <label>
+        Exam Name:
+        <input type="text" id="exam-name">
+    </label>
+
+
+    <br><br>
+
+    <label>
+        Duration:
+        <input type="number" id="exam-duration">
+    </label>
+
+    <br><br>
+
+    <label>
+        Start Time:
+        <input type="time" id="exam-start">
+    </label>
+
+    <br>Enter Syllabus: <br>
+    <textarea
+        id="syllabus-text"
+        rows="5"
+        cols="50"
+        placeholder="Paste syllabus">
+    </textarea>
+
+    <br><br>
+
+    <input type="file" id="syllabus-file">
+
+    <br><br>
+
+    <input type="file" id="pyq-files" multiple>
+
+    <br><br>
+
+    <input type="file" id="notes-files" multiple>
+
+    <br>Enter Custom instructions: <br>
+    <textarea
+        id="custom-instructions"
+        rows="5"
+        cols="50"
+        placeholder="Custom instructions">
+    </textarea>
+
+    <br><br>
+
+    <button id="generate-strategy-btn">
+        Generate Strategy
+    </button>
+
+</div>
+
+<!-- STRATEGY -->
+
+<div id="page-strategy">
+
+    <h2>Strategy</h2>
+
+    <div id="strategy-content">
+
+    </div>
+
+</div>
+
+<!-- CHAT -->
+
+<div id="page-chat">
+
+    <h2>QA Chat</h2>
+
+    <div id="chat-messages">
+
+    </div>
+
+    <br>
+
+    <input
+        type="text"
+        id="chat-input"
+        placeholder="Ask something">
+
+    <button id="send-btn">
+        Send
+    </button>
+
+    <br><br>
+
+    <button id="quick-btree">
+        B+ Trees
+    </button>
+
+    <button id="quick-banker">
+        Banker's Algorithm
+    </button>
+
+    <button id="quick-dfa">
+        NFA vs DFA
+    </button>
+
+    <button id="quick-dijkstra">
+        Dijkstra vs Bellman Ford
+    </button>
+
+    <p>
+        Questions Asked:
+        <span id="q-count">0</span>
+    </p>
+
+</div>
+
+<!-- DOUBT -->
+
+<div id="page-doubt">
+
+    <h2>Doubt Solver</h2>
+
+    <textarea
+        id="doubt-input"
+        rows="5"
+        cols="60">
+    </textarea>
+
+    <br><br>
+
+    <button id="submit-doubt-btn">
+        Submit Doubt
+    </button>
+
+</div>
+
+<!-- MOCK -->
+
+<div id="page-mock">
+
+    <h2>Mock Exam</h2>
+
+    <p>
+        Time Remaining:
+        <span id="mock-timer">
+            30:00
+        </span>
+    </p>
+
+    <div id="question-container">
+
+    </div>
+
+    <form id="mock-options">
+
+        <input type="radio" name="opt" value="A"> A
+        <br>
+
+        <input type="radio" name="opt" value="B"> B
+        <br>
+
+        <input type="radio" name="opt" value="C"> C
+        <br>
+
+        <input type="radio" name="opt" value="D"> D
+
+    </form>
+
+    <br>
+
+    <button id="check-answer-btn">
+        Check Answer
+    </button>
+
+    <button id="prev-btn">
+        Prev
+    </button>
+
+    <button id="next-btn">
+        Next
+    </button>
+
+    <div id="explanation">
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
