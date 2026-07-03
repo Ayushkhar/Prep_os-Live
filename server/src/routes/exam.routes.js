@@ -18,9 +18,9 @@ router.route("/setup").post(
             name: "attachment",
             maxCount: 3
         }
-    ]),
+    ]),setupexam
     
-)
+);
 // R2
 router.route("/strategy/:examid")
 .get(getstrategycontent);
@@ -29,4 +29,4 @@ router.route("/chat/:examid").post(getchats);
 // R4
 router.route("/doubt/:examid").post(getdoubts);
 // R5
-router.route("/mock/:examid").get(getmockex);
+router.route("/mock/:examid").get(getmocktest);
