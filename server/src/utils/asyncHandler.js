@@ -3,7 +3,7 @@ const asynchandler=(fn)=>async(req, res, next)=>{
         await fn(req, res, next)
     }
     catch(err){
-        res.status(err.code || 500).json({
+        res.status(err.statusCode || 500).json({
             success: false,
             message: err.message,
         })
