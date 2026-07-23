@@ -1,0 +1,161 @@
+================================================================================
+DRAW.IO MERMAID CODES — PrepOS ARCHITECTURE FIGURES
+================================================================================
+How to use in draw.io (app.diagrams.net):
+1. Open draw.io (https://app.diagrams.net)
+2. Click: Arrange -> Insert -> Advanced -> Mermaid
+3. Copy and paste any code block below and click "Insert"!
+================================================================================
+
+
+--------------------------------------------------------------------------------
+FIGURE 1: SYSTEM ARCHITECTURE DIAGRAM
+--------------------------------------------------------------------------------
+graph TD
+    subgraph Client ["Client Layer - Browser"]
+        UI["Single Page Web App"]
+        LocalStorage["localStorage / sessionStorage"]
+        SocketClient["Socket.IO Client"]
+    end
+
+    subgraph API ["Server & Processing Layer"]
+        Server["Express HTTP Server"]
+        SocketServer["Socket.IO Real-Time Gateway"]
+        AuthMW["JWT Auth Middleware & Guest Handler"]
+        Multer["Multer File Upload Middleware"]
+        PDFParser["PDF & Text Extractor"]
+    end
+
+    subgraph Data ["Database & Media Storage"]
+        MongoDB["MongoDB Atlas"]
+        Cloudinary["Cloudinary Storage"]
+    end
+
+    subgraph AI ["AI Services"]
+        Groq["Groq SDK - Llama 3.3 70B"]
+    end
+
+    UI -->|"HTTP REST Requests"| Server
+    UI -->|"WebSocket Events"| SocketServer
+    UI -->|"Persists Checkbox States"| LocalStorage
+
+    Server --> AuthMW
+    Server --> Multer
+    Multer --> Cloudinary
+    Multer --> PDFParser
+
+    Server -->|"Read and Write Documents"| MongoDB
+    SocketServer -->|"Fetch History and Save Messages"| MongoDB
+
+    PDFParser -->|"Parsed Syllabus and Notes Text"| Server
+    Server -->|"Strategy, Doubt, and Mock Prompts"| Groq
+    SocketServer -->|"Token Streaming Chat"| Groq
+
+
+--------------------------------------------------------------------------------
+FIGURE 2: USER AUTHENTICATION & GUEST LOGIN FLOW
+--------------------------------------------------------------------------------
+sequenceDiagram
+    autonumber
+    actor User
+    participant Client as Web Browser
+    participant API as Express Auth API
+    participant DB as MongoDB Atlas
+
+    alt Guest Login
+        User->>Client: Clicks "Continue as Guest"
+        Client->>API: POST /api/v1/users/guest-login
+        API->>DB: Find or create guest user record
+        DB-->>API: Guest User Document
+        API->>API: Sign Access Token and Refresh Token
+        API-->>Client: HTTP 200 OK + JWT Tokens
+        Client->>Client: Save Access Token in sessionStorage
+        Client->>User: Redirect to Exam Dashboard
+    else Standard Account Login
+        User->>Client: Submits Username & Password
+        Client->>API: POST /api/v1/users/login
+        API->>DB: Query User by Username or Email
+        DB-->>API: User Document + Hashed Password
+        API->>API: Verify Password Hash
+        API->>API: Sign Access Token & Refresh Token
+        API-->>Client: HTTP 200 OK + Cookies & Tokens
+        Client->>User: Display Authenticated Dashboard
+    end
+
+
+--------------------------------------------------------------------------------
+FIGURE 3: EXAM SETUP & STRATEGY FLOWCHART GENERATION PIPELINE
+--------------------------------------------------------------------------------
+sequenceDiagram
+    autonumber
+    actor Student
+    participant Client as Frontend Script
+    participant API as Exam Setup Endpoint
+    participant PDF as PDF/Text Parser
+    participant Cloud as Cloudinary
+    participant Groq as Groq AI Engine
+    participant DB as MongoDB Atlas
+
+    Student->>Client: Fills form OR clicks Load Sample Exam
+    Client->>Client: Attach files via DataTransfer API
+    Client->>API: POST /api/v1/exams/setup
+    API->>Cloud: Upload PDF and Text attachments
+    Cloud-->>API: File URLs
+    API->>PDF: Extract text content from syllabus and PYQs
+    PDF-->>API: Extracted raw syllabus text
+    API->>Groq: Query generateStudyStrategy
+    Groq-->>API: Returns JSON Plan
+    API->>DB: Save Exam Document with strategy JSON
+    DB-->>API: Saved Exam Object
+    API-->>Client: HTTP 201 Created
+    Client->>Client: Render Interactive Tree Flowchart
+    Student->>Client: Check off completed daily tasks
+    Client->>Client: Persist checkbox state to localStorage
+
+
+--------------------------------------------------------------------------------
+FIGURE 4: REAL-TIME Q&A CHAT STREAMING WORKFLOW
+--------------------------------------------------------------------------------
+sequenceDiagram
+    autonumber
+    actor Student
+    participant UI as Chat Panel UI
+    participant Gateway as Socket.IO Gateway
+    participant DB as MongoDB Chat Collection
+    participant Groq as Groq Streaming Engine
+
+    Student->>UI: Types question and hits Send
+    UI->>Gateway: emit send-message
+    Gateway->>DB: Save user chat message
+    Gateway-->>UI: emit chat-message-saved
+    Gateway-->>UI: emit chat-stream-start
+    Gateway->>Groq: Request text stream
+    loop Token Streaming
+        Groq-->>Gateway: Yield text chunk
+        Gateway-->>UI: emit chat-stream-chunk
+        UI->>UI: Append chunk and format Markdown
+    end
+    Gateway->>DB: Save complete AI model response
+    Gateway-->>UI: emit chat-stream-end
+
+
+--------------------------------------------------------------------------------
+FIGURE 5: MOCK EXAM ENGINE STATE MACHINE
+--------------------------------------------------------------------------------
+stateDiagram-v2
+    [*] --> Idle: Tab Activated
+    Idle --> Loading: Fetch or Generate Mock Exam
+    Loading --> ActiveQuiz: Load Questions and Start Timer
+    
+    state ActiveQuiz {
+        [*] --> QuestionView
+        QuestionView --> OptionSelected: Click Option Card
+        OptionSelected --> AnswerChecked: Click Check Answer
+        AnswerChecked --> ViewExplanation: Show Explanation Card
+        ViewExplanation --> NextQuestion: Click Next
+        NextQuestion --> QuestionView
+    }
+
+    ActiveQuiz --> QuizSubmitted: Click Submit OR Timer Expires
+    QuizSubmitted --> ScoreCard: Calculate Score and Save to DB
+    ScoreCard --> ActiveQuiz: Click Restart Quiz
