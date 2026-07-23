@@ -357,9 +357,9 @@ $("generate-strategy-btn").addEventListener("click", async () => {
         }
     } catch (err) {
         $("loading-spinner").style.display = "none";
-        btn.innerHTML = "Generate AI Study Strategy";
+        btn.innerHTML = "Generate Study Strategy";
         btn.disabled = false;
-        showToast("Network error. Is the server running on port 3000?", "danger");
+        showToast(err.message || "Failed to generate strategy. Please check your network connection.", "danger");
         showPanel("page-setup");
     }
 });
