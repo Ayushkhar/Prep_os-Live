@@ -178,9 +178,50 @@ const getCurrentUser = asynchandler(async (req, res) => {
         .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
 
+const guestLogin = asynchandler(async (req, res) => {
+    let guestUser = await User.findOne({ username: "guest" });
+    if (!guestUser) {
+        try {
+            guestUser = await User.create({
+                username: "guest",
+                email: "guest@example.com",
+                password: "guestpassword123"
+            });
+        } catch (e) {
+            guestUser = await User.findOne({ email: "guest@example.com" });
+        }
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(guestUser._id);
+    const loggedInUser = await User.findById(guestUser._id).select("-password -refreshToken");
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None"
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken
+                },
+                "Guest login successful"
+            )
+        );
+});
+
 export {
     registerUser,
     loginUser,
+    guestLogin,
     logoutUser,
     refreshAccessToken,
     getCurrentUser

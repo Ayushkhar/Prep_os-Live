@@ -127,6 +127,40 @@ $("login-form").addEventListener("submit", async e => {
     btn.disabled = false;
 });
 
+const guestBtn = $("btn-guest-login");
+if (guestBtn) {
+    guestBtn.addEventListener("click", async () => {
+        guestBtn.innerHTML = `<span class="btn-spinner"></span>Signing in as Guest...`;
+        guestBtn.disabled = true;
+        await performGuestLogin();
+        guestBtn.innerHTML = `
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Continue as Guest
+        `;
+        guestBtn.disabled = false;
+    });
+}
+
+async function performGuestLogin() {
+    try {
+        const res = await fetch(`${USER_API}/guest-login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (data.success) {
+            currentUser = data.data.user;
+            sessionStorage.setItem("accessToken", data.data.accessToken);
+            showToast("Logged in as Guest!", "success");
+            enterDashboard();
+        } else {
+            showToast(data.message || "Guest login failed", "danger");
+        }
+    } catch {
+        showToast("Cannot reach server. Is the backend running?", "danger");
+    }
+}
+
 async function performLogin(username, password) {
     try {
         const payload = username.includes("@") ? { email: username, password } : { username, password };
