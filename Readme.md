@@ -2,66 +2,66 @@
 
 **PrepOS** is an intelligent academic preparation platform designed to convert raw course syllabi, past year question papers (PYQs), and study notes into structured, interactive study roadmaps, real-time doubt explanations, and adaptive mock assessments.
 
-**Developer:** Suryansh Khare  
-**Backend Runtime:** Node.js (Express 5 + Socket.IO)  
-**AI Engine:** Groq (Llama 3.3 70B Versatile)  
-**Database:** MongoDB Atlas (Mongoose 9)  
-**File Storage:** Cloudinary + Local Disk Buffer  
-**Deployment Target:** Render  
+- **Developer:** Suryansh Khare
+- **Backend Runtime:** Node.js (Express 5 + Socket.IO)
+- **AI Engine:** Groq (Llama 3.3 70B Versatile)
+- **Database:** MongoDB Atlas (Mongoose 9)
+- **File Storage:** Cloudinary + Local Disk Buffer
+- **Deployment Target:** Render
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 The following diagram illustrates the end-to-end data flow between the single-page frontend client, the Node.js/Express API layer, MongoDB storage, Cloudinary file pipeline, and the Groq LLM inference service.
 
 ```mermaid
 graph TD
-    subgraph Client ["Client Layer (Browser)"]
-        UI["Single Page Web App (HTML5 / CSS / JS)"]
-        LocalStorage["localStorage / sessionStorage (State & Progress)"]
-        SocketClient["Socket.IO Client (Real-time Stream)"]
+    subgraph Client ["Client Layer - Browser"]
+        UI["Single Page Web App"]
+        LocalStorage["localStorage / sessionStorage"]
+        SocketClient["Socket.IO Client"]
     end
 
-    subgraph API ["Server & Processing Layer (Node.js / Express 5)"]
+    subgraph API ["Server & Processing Layer"]
         Server["Express HTTP Server"]
         SocketServer["Socket.IO Real-Time Gateway"]
         AuthMW["JWT Auth Middleware & Guest Handler"]
         Multer["Multer File Upload Middleware"]
-        PDFParser["PDF & Text Extractor (pdf-parse / fs)"]
+        PDFParser["PDF & Text Extractor"]
     end
 
     subgraph Data ["Database & Media Storage"]
-        MongoDB[("MongoDB Atlas\n(Users, Exams, MockTests, Chats)")]
-        Cloudinary[("Cloudinary\n(PDFs & Notes Storage)")]
+        MongoDB["MongoDB Atlas"]
+        Cloudinary["Cloudinary Storage"]
     end
 
-    subgraph AI ["AI & LLM Services"]
-        Groq["Groq SDK (Llama 3.3 70B Versatile)"]
+    subgraph AI ["AI Services"]
+        Groq["Groq SDK - Llama 3.3 70B"]
     end
 
-    UI <-->|HTTP REST Requests| Server
-    UI <-->|WebSocket Events| SocketServer
-    UI <-->|Persists Checkbox States| LocalStorage
+    UI -->|"HTTP REST Requests"| Server
+    UI -->|"WebSocket Events"| SocketServer
+    UI -->|"Persists Checkbox States"| LocalStorage
 
     Server --> AuthMW
     Server --> Multer
     Multer --> Cloudinary
     Multer --> PDFParser
 
-    Server -->|Read / Write Documents| MongoDB
-    SocketServer -->|Fetch History & Save Messages| MongoDB
+    Server -->|"Read and Write Documents"| MongoDB
+    SocketServer -->|"Fetch History and Save Messages"| MongoDB
 
-    PDFParser -->|Parsed Syllabus / Notes Text| Server
-    Server -->|Prompts (Strategy, Doubt, Mock)| Groq
-    SocketServer -->|Token Streaming Chat| Groq
+    PDFParser -->|"Parsed Syllabus and Notes Text"| Server
+    Server -->|"Strategy, Doubt, and Mock Prompts"| Groq
+    SocketServer -->|"Token Streaming Chat"| Groq
 ```
 
 ---
 
-## 🔄 Core Workflows & Sequence Diagrams
+## Core Workflows and Sequence Diagrams
 
-### 1. User Authentication & Guest Login Flow
+### 1. User Authentication and Guest Login Flow
 
 PrepOS supports standard JWT account registration/login as well as a zero-friction **"Continue as Guest"** session initialization.
 
@@ -76,18 +76,18 @@ sequenceDiagram
     alt Guest Login
         User->>Client: Clicks "Continue as Guest"
         Client->>API: POST /api/v1/users/guest-login
-        API->>DB: Find or create 'guest' user record
+        API->>DB: Find or create guest user record
         DB-->>API: Guest User Document
-        API->>API: Sign Access Token (1d) & Refresh Token (10d)
-        API-->>Client: HTTP 200 OK + JWT Tokens & Guest User Details
+        API->>API: Sign Access Token and Refresh Token
+        API-->>Client: HTTP 200 OK + JWT Tokens
         Client->>Client: Save Access Token in sessionStorage
         Client->>User: Redirect to Exam Dashboard
     else Standard Account Login
         User->>Client: Submits Username & Password
         Client->>API: POST /api/v1/users/login
-        API->>DB: Query User by Username/Email
+        API->>DB: Query User by Username or Email
         DB-->>API: User Document + Hashed Password
-        API->>API: Verify Password Hash (bcrypt)
+        API->>API: Verify Password Hash
         API->>API: Sign Access Token & Refresh Token
         API-->>Client: HTTP 200 OK + Cookies & Tokens
         Client->>User: Display Authenticated Dashboard
@@ -96,7 +96,7 @@ sequenceDiagram
 
 ---
 
-### 2. Exam Setup & Interactive Strategy Flowchart Generation
+### 2. Exam Setup and Interactive Strategy Flowchart Generation
 
 When a user submits an exam configuration (or clicks **Load Sample Exam**), the system extracts raw document text, constructs an engineering prompt, queries Groq Llama 3.3 70B for a structured JSON strategy, and renders an interactive tree flowchart.
 
@@ -111,22 +111,21 @@ sequenceDiagram
     participant Groq as Groq AI Engine
     participant DB as MongoDB Atlas
 
-    Student->>Client: Fills form OR clicks "Load Sample Exam"
-    Client->>Client: Attach files (via DataTransfer API if sample)
-    Client->>API: POST /api/v1/exams/setup (FormData)
-    API->>Cloud: Upload PDF/Text attachments
+    Student->>Client: Fills form OR clicks Load Sample Exam
+    Client->>Client: Attach files via DataTransfer API
+    Client->>API: POST /api/v1/exams/setup
+    API->>Cloud: Upload PDF and Text attachments
     Cloud-->>API: File URLs
-    API->>PDF: Extract text content from syllabus & PYQs
+    API->>PDF: Extract text content from syllabus and PYQs
     PDF-->>API: Extracted raw syllabus text
-    API->>Groq: Query generateStudyStrategy(syllabus, duration, starttime)
-    Note over Groq: Llama 3.3 70B compiles structured JSON plan
-    Groq-->>API: Returns JSON (Milestones, Days, Tasks, Tips)
+    API->>Groq: Query generateStudyStrategy
+    Groq-->>API: Returns JSON Plan
     API->>DB: Save Exam Document with strategy JSON
     DB-->>API: Saved Exam Object
-    API-->>Client: HTTP 201 Created (Exam Data)
+    API-->>Client: HTTP 201 Created
     Client->>Client: Render Interactive Tree Flowchart
     Student->>Client: Check off completed daily tasks
-    Client->>Client: Persist checkbox state to localStorage & calculate %
+    Client->>Client: Persist checkbox state to localStorage
 ```
 
 ---
@@ -144,19 +143,19 @@ sequenceDiagram
     participant DB as MongoDB Chat Collection
     participant Groq as Groq Streaming Engine
 
-    Student->>UI: Types question & hits Send
-    UI->>Gateway: emit("send-message", { examId, message })
+    Student->>UI: Types question and hits Send
+    UI->>Gateway: emit send-message
     Gateway->>DB: Save user chat message
-    Gateway-->>UI: emit("chat-message-saved")
-    Gateway-->>UI: emit("chat-stream-start")
-    Gateway->>Groq: Request text stream (getGeminiChatStream)
+    Gateway-->>UI: emit chat-message-saved
+    Gateway-->>UI: emit chat-stream-start
+    Gateway->>Groq: Request text stream
     loop Token Streaming
         Groq-->>Gateway: Yield text chunk
-        Gateway-->>UI: emit("chat-stream-chunk", { text })
-        UI->>UI: Append chunk & format Markdown
+        Gateway-->>UI: emit chat-stream-chunk
+        UI->>UI: Append chunk and format Markdown
     end
     Gateway->>DB: Save complete AI model response
-    Gateway-->>UI: emit("chat-stream-end", modelChatMessage)
+    Gateway-->>UI: emit chat-stream-end
 ```
 
 ---
@@ -171,12 +170,12 @@ sequenceDiagram
     participant API as POST /api/v1/exams/doubt/:examId
     participant Groq as Groq Llama 3.3 Engine
 
-    Student->>UI: Enters academic question / formula / code problem
+    Student->>UI: Enters academic question, formula, or code problem
     UI->>API: Send doubt text + Bearer JWT
-    API->>Groq: Query solveDoubt(doubtText, syllabusText)
+    API->>Groq: Query solveDoubt
     Groq-->>API: Return structured Markdown explanation
-    API-->>UI: HTTP 200 OK { answer }
-    UI->>UI: Render Markdown (headers, code blocks, math)
+    API-->>UI: HTTP 200 OK
+    UI->>UI: Render Markdown
 ```
 
 ---
@@ -186,75 +185,75 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
     [*] --> Idle: Tab Activated
-    Idle --> Loading: Fetch /generate Mock Exam
-    Loading --> ActiveQuiz: Load Questions & Start 15-Min Timer
+    Idle --> Loading: Fetch or Generate Mock Exam
+    Loading --> ActiveQuiz: Load Questions and Start Timer
     
     state ActiveQuiz {
         [*] --> QuestionView
         QuestionView --> OptionSelected: Click Option Card
-        OptionSelected --> AnswerChecked: Click "Check Answer"
+        OptionSelected --> AnswerChecked: Click Check Answer
         AnswerChecked --> ViewExplanation: Show Explanation Card
-        ViewExplanation --> NextQuestion: Click "Next"
+        ViewExplanation --> NextQuestion: Click Next
         NextQuestion --> QuestionView
     }
 
-    ActiveQuiz --> QuizSubmitted: Click "Submit" OR Timer Reaches 00:00
-    QuizSubmitted --> ScoreCard: Calculate Score & Save to DB
-    ScoreCard --> ActiveQuiz: Click "Restart Quiz"
+    ActiveQuiz --> QuizSubmitted: Click Submit OR Timer Expires
+    QuizSubmitted --> ScoreCard: Calculate Score and Save to DB
+    ScoreCard --> ActiveQuiz: Click Restart Quiz
 ```
 
 ---
 
-## 📁 Repository Directory Structure
+## Repository Directory Structure
 
 ```
 Prep_os-Live/
-├── .env                              # Environment variables (Ignored by Git)
-├── .gitignore                        # Git ignore patterns
-├── render.yaml                       # Render cloud deployment specification
-├── index.js                          # Node.js HTTP server & socket initialization
-├── app.js                            # Express configuration, CORS, & static routes
+├── .env                              # Environment variables
+├── .gitignore                        # Git ignore rules
+├── render.yaml                       # Render deployment manifest
+├── index.js                          # Node.js server entry point
+├── app.js                            # Express configuration & middleware
 ├── constants.js                      # System database name constant
 ├── package.json                      # Node package manifest
-├── package-lock.json                 # Locked dependency tree
+├── package-lock.json                 # Dependency lockfile
 ├── Readme.md                         # Project documentation
 │
-├── client/                           # Frontend Single-Page Application
-│   ├── index.html                    # Main HTML document & structure
-│   ├── script.js                     # Application state, API integrations, DOM handlers
-│   ├── style.css                     # Design system, clean theme, & layout styles
-│   └── exam_prp.html                 # Secondary page template
+├── client/                           # Frontend Application
+│   ├── index.html                    # Main HTML markup
+│   ├── script.js                     # Application logic & DOM state
+│   ├── style.css                     # Minimalist stylesheet
+│   └── exam_prp.html                 # Page template
 │
-├── server/                           # Backend Application Source
+├── server/                           # Backend Application
 │   ├── public/
-│   │   └── temp/                     # Temporary local upload buffer
+│   │   └── temp/                     # Temporary upload directory
 │   └── src/
 │       ├── controllers/
-│       │   ├── exam.controller.js    # Strategy, Doubt, Mock, and Chat business logic
-│       │   └── user.controller.js    # Registration, Login, Guest Session logic
+│       │   ├── exam.controller.js    # Exam & AI business logic
+│       │   └── user.controller.js    # Auth & guest session logic
 │       ├── db/
-│       │   └── index.js              # Mongoose MongoDB connection initializer
+│       │   └── index.js              # Database connection helper
 │       ├── middlewares/
-│       │   ├── auth.middleware.js    # JWT verification middleware
-│       │   └── multer.middleware.js  # File upload handler config
+│       │   ├── auth.middleware.js    # JWT auth verification
+│       │   └── multer.middleware.js  # File upload middleware
 │       ├── models/
-│       │   ├── user.model.js         # User schema & password hashing
-│       │   ├── exam.model.js         # Exam schema & strategy store
-│       │   ├── mocktest.model.js     # MCQ quiz schema & results
-│       │   ├── chat.model.js         # QA Chat history schema
-│       │   └── subscription.model.js # Subscription model schema
+│       │   ├── user.model.js         # User model schema
+│       │   ├── exam.model.js         # Exam schema
+│       │   ├── mocktest.model.js     # Quiz schema
+│       │   ├── chat.model.js         # Chat history schema
+│       │   └── subscription.model.js # Subscription schema
 │       ├── routes/
-│       │   ├── exam.routes.js        # Exam API endpoint definitions
-│       │   └── user.routes.js        # Auth API endpoint definitions
+│       │   ├── exam.routes.js        # Exam API endpoints
+│       │   └── user.routes.js        # User auth API endpoints
 │       ├── utils/
 │       │   ├── ApiError.js           # Custom API Error class
-│       │   ├── ApiResponse.js        # Standardized JSON response formatter
-│       │   ├── asyncHandler.js       # Promise wrapper for Express controllers
-│       │   ├── cloudinary.js         # Cloudinary file upload helper
-│       │   └── gemini.js             # Groq SDK AI inference service
-│       └── socket.js                 # Real-time WebSocket connection handler
+│       │   ├── ApiResponse.js        # JSON response helper
+│       │   ├── asyncHandler.js       # Controller wrapper
+│       │   ├── cloudinary.js         # Media storage helper
+│       │   └── gemini.js             # Groq SDK AI helper
+│       └── socket.js                 # Socket.IO connection handler
 │
-└── testing_materials/                # Sample test data & syllabus documents
+└── testing_materials/                # Sample test data
     ├── notes.txt
     ├── pyq_2025.txt
     └── syllabus.txt
@@ -262,7 +261,7 @@ Prep_os-Live/
 
 ---
 
-## 🌐 REST API Reference
+## REST API Reference
 
 ### User Authentication (`/api/v1/users`)
 
@@ -275,7 +274,7 @@ Prep_os-Live/
 | `GET` | `/me` | Bearer JWT | Returns current authenticated user profile |
 | `POST` | `/refresh-token` | Public | Issues a new access token via refresh token |
 
-### Exam & AI Services (`/api/v1/exams`)
+### Exam and AI Services (`/api/v1/exams`)
 
 | Method | Endpoint | Auth | Description |
 | :--- | :--- | :--- | :--- |
@@ -289,9 +288,9 @@ Prep_os-Live/
 
 ---
 
-## 🛠️ Local Installation & Development
+## Local Installation and Development
 
-### 1. Clone Repository & Install Dependencies
+### 1. Clone Repository and Install Dependencies
 ```bash
 git clone https://github.com/Ayushkhar/Prep_os-Live.git
 cd Prep_os-Live
@@ -323,20 +322,20 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
-## 🚀 Cloud Deployment (Render)
+## Cloud Deployment
 
 This repository includes a pre-configured `render.yaml` manifest.
 
-1. Create a new **Web Service** on [Render](https://render.com).
+1. Create a new **Web Service** on Render.
 2. Connect your GitHub repository `Ayushkhar/Prep_os-Live`.
 3. Render automatically loads build (`npm install`) and start (`npm start`) commands.
-4. Add environment variables in Render's **Environment** section (or use **Add from .env**).
+4. Add environment variables in Render's **Environment** section.
 5. Click **Deploy**.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Suryansh Khare**  
-- GitHub: [@Ayushkhar](https://github.com/Ayushkhar)  
-- Live Q&A Portal: [nexus.suryanshkhare.online](https://nexus.suryanshkhare.online)
+- GitHub: [https://github.com/Ayushkhar](https://github.com/Ayushkhar)  
+- Live Portal: [nexus.suryanshkhare.online](https://nexus.suryanshkhare.online)
