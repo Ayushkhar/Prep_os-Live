@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepOS — Smart Exam Preparation Platform</title>
+    <meta name="description" content="PrepOS is a smart exam preparation platform with personalized study strategies, doubt solving, and mock exams.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app-container">
+
+    <!-- AUTH SECTION -->
+    <div id="auth-section" class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="app-brand">PrepOS</div>
+                <div class="auth-subtitle">Smart Exam Preparation Platform</div>
+            </div>
+            <div class="auth-tabs">
+                <button id="tab-login-toggle" class="auth-tab-btn active">Sign In</button>
+                <button id="tab-register-toggle" class="auth-tab-btn">Create Account</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username or Email</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="Enter username or email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+            <form id="register-form" style="display:none;">
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" class="form-control" placeholder="e.g. john_doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email Address</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="e.g. john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="Minimum 6 characters" required>
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+            <div style="display:flex;align-items:center;margin:18px 0 12px;gap:10px;">
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+                <span style="font-size:0.75rem;color:var(--text-muted);font-weight:500;">or</span>
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+            </div>
+            <button type="button" id="btn-guest-login" class="btn-secondary" style="width:100%;padding:9px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                Continue as Guest
+            </button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboard-section" class="dashboard-wrapper" style="display:none;">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-brand">PrepOS</div>
+            </div>
+            <button id="btn-sidebar-setup" class="btn-setup-new">+ Configure New Exam</button>
+            <div class="exams-section">
+                <div class="section-title">Your Exams</div>
+                <div id="exams-list-container" class="exams-list"></div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div id="user-avatar" class="avatar">U</div>
+                    <div class="user-info">
+                        <span id="user-display-name" class="username">User</span>
+                        <button id="btn-logout" class="btn-logout">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tab Header -->
+            <header id="main-header" class="content-header" style="display:none;">
+                <div class="exam-title-wrapper">
+                    <h2 id="active-exam-name" class="active-exam-title">Exam Name</h2>
+                    <span id="active-exam-duration" class="active-exam-duration">Duration: 0 hours</span>
+                </div>
+                <nav class="nav-tabs">
+                    <button class="tab-btn active" data-target="page-strategy">Strategy</button>
+                    <button class="tab-btn" data-target="page-chat">QA Chat</button>
+                    <button class="tab-btn" data-target="page-doubt">Doubt Solver</button>
+                    <button class="tab-btn" data-target="page-mock">Mock Exam</button>
+                </nav>
+            </header>
+
+            <!-- Body -->
+            <div id="main-body" class="content-body">
+
+                <!-- LOADING SCREEN -->
+                <div id="loading-spinner" class="loader-wrapper" style="display:none;">
+                    <div class="spinner"></div>
+                    <p id="loading-text" style="color:var(--text-secondary);font-size:0.95rem;">Analyzing your files and building your personalized study strategy...</p>
+                </div>
+
+                <!-- SETUP PANEL -->
+                <div id="page-setup" class="page-panel active">
+                    <div class="setup-layout">
+                        <h2 style="margin-bottom:20px;font-weight:800;letter-spacing:-0.5px;">Setup Your Exam</h2>
+
+                        <!-- Sample / Real Data Toggle -->
+                        <div class="demo-toggle-row">
+                            <p class="demo-toggle-label">How do you want to get started?</p>
+                            <div class="demo-toggle-buttons">
+                                <button type="button" id="btn-load-sample" class="demo-btn demo-btn-sample">
+                                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    Load Sample Exam
+                                    <span class="demo-badge">Quick Test</span>
+                                </button>
+                                <button type="button" id="btn-use-real" class="demo-btn demo-btn-real">
+                                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    Fill My Own Data
+                                    <span class="demo-badge real">Your Exam</span>
+                                </button>
+                            </div>
+                            <div id="sample-loaded-notice" class="sample-notice" style="display:none;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Sample data loaded! Hit <strong>Generate AI Study Strategy</strong> to test the full pipeline end-to-end.
+                            </div>
+                        </div>
+
+                        <div class="setup-grid">
+                            <div class="form-group">
+                                <label for="exam-name">Exam Name</label>
+                                <input type="text" id="exam-name" class="form-control" placeholder="e.g. Operating Systems Final" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="exam-duration">Available Study Duration (Hours)</label>
+                                <input type="number" id="exam-duration" class="form-control" placeholder="e.g. 20" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="exam-start">Study Start Time</label>
+                                <input type="time" id="exam-start" class="form-control" value="09:00" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="syllabus-file">Syllabus PDF / Text File</label>
+                                <label class="file-upload-box" for="syllabus-file">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    <span id="syllabus-file-label">Choose Syllabus File</span>
+                                    <input type="file" id="syllabus-file" accept=".pdf,.txt">
+                                </label>
+                            </div>
+                            <div class="form-group setup-full-width">
+                                <label for="syllabus-text">Or Paste Syllabus Text</label>
+                                <textarea id="syllabus-text" class="form-control" rows="4" placeholder="Paste syllabus description here if no file..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pyq-files">Previous Year Papers (PYQs)</label>
+                                <label class="file-upload-box" for="pyq-files">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    <span id="pyq-files-label">Add PYQs (Multiple files)</span>
+                                    <input type="file" id="pyq-files" multiple accept=".pdf,.txt">
+                                </label>
+                                <div id="pyq-preview" class="file-list-preview"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="notes-files">Additional Notes & Reading Material</label>
+                                <label class="file-upload-box" for="notes-files">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    <span id="notes-files-label">Add Notes / Reference Material</span>
+                                    <input type="file" id="notes-files" multiple accept=".pdf,.txt">
+                                </label>
+                                <div id="notes-preview" class="file-list-preview"></div>
+                            </div>
+                            <div class="form-group setup-full-width">
+                                <label for="custom-instructions">Custom Instructions (Optional)</label>
+                                <textarea id="custom-instructions" class="form-control" rows="3" placeholder="e.g. Focus on process scheduling, skip memory mapping..."></textarea>
+                            </div>
+                            <div class="form-group setup-full-width" style="margin-top:8px;">
+                                <button id="generate-strategy-btn" type="button" class="btn-primary">Generate Study Strategy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STRATEGY PANEL -->
+                <div id="page-strategy" class="page-panel">
+                    <div class="strategy-intro">
+                        <h3 style="font-weight:800;font-size:1.4rem;letter-spacing:-0.5px;">Interactive Strategy Flowchart</h3>
+                        <p id="strategy-summary" style="color:var(--text-secondary);font-size:0.9rem;margin-top:8px;max-width:700px;line-height:1.7;">
+                            Your AI-generated study path will appear here as an interactive flowchart tree.
+                        </p>
+                    </div>
+                    <div id="tree-flowchart-container" class="tree-flowchart">
+                        <div style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:0.9rem;">
+                            Set up your exam above and generate your study strategy to get started.
+                        </div>
+                    </div>
+                    <div id="tips-section"></div>
+                </div>
+
+                <!-- QA CHAT PANEL -->
+                <div id="page-chat" class="page-panel">
+                    <div class="nexus-redirect-card">
+                        <div class="nexus-pulse-ring">
+                            <div class="nexus-icon-inner">
+                                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                        </div>
+                        <h3>Redirecting to Project Nexus</h3>
+                        <p class="author-line">Developed by Suryansh Khare</p>
+                        <p class="desc-line">The live Q&A chat module is available inside Project Nexus — a dedicated study workspace built by the same team.</p>
+                        <div class="nexus-countdown" id="nexus-countdown">Redirecting in 3s...</div>
+                        <a href="https://nexus.suryanshkhare.online" target="_blank" class="btn-nexus">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            Open Project Nexus
+                        </a>
+                    </div>
+                </div>
+
+                <!-- DOUBT SOLVER PANEL -->
+                <div id="page-doubt" class="page-panel">
+                    <div class="doubt-solver-layout">
+                        <div class="doubt-input-section">
+                            <h3 style="font-weight:800;font-size:1.1rem;letter-spacing:-0.3px;">Submit a Doubt</h3>
+                            <p style="color:var(--text-secondary);font-size:0.82rem;line-height:1.6;">Paste a topic, algorithm, problem, or formula — get a clear, step-by-step explanation.</p>
+                            <textarea id="doubt-input" class="doubt-textarea" placeholder="e.g. Explain Banker's Algorithm step by step with an example..."></textarea>
+                            <button id="submit-doubt-btn" class="btn-primary">Get Explanation</button>
+                        </div>
+                        <div id="doubt-solution-container" class="doubt-solution-section">
+                            <div class="empty-state">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                <span style="font-weight:600;font-size:0.9rem;">No doubt submitted yet</span>
+                                <p style="font-size:0.78rem;max-width:220px;text-align:center;">Submit a query on the left to get an AI-powered explanation here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MOCK EXAM PANEL -->
+                <div id="page-mock" class="page-panel">
+                    <div class="mock-exam-layout">
+                        <!-- Quiz Card -->
+                        <div id="mock-quiz-card" class="mock-card">
+                            <div class="mock-meta-header">
+                                <span id="mock-question-num" class="mock-question-num">Question 1 of 5</span>
+                                <div class="mock-timer-wrapper">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span id="mock-timer">15:00</span>
+                                </div>
+                            </div>
+                            <div class="mock-progress-bar">
+                                <div id="mock-progress-fill" class="mock-progress-fill"></div>
+                            </div>
+                            <div id="question-container" class="mock-question-text" style="min-height:60px;">
+                                Loading mock test...
+                            </div>
+                            <div id="mock-options" class="mock-options-list"></div>
+                            <div id="explanation" class="mock-explanation-card">
+                                <h4>Explanation</h4>
+                                <p id="explanation-text"></p>
+                            </div>
+                            <div class="mock-footer">
+                                <button id="check-answer-btn" class="btn-primary" style="width:auto;padding:10px 28px;" disabled>Check Answer</button>
+                                <div class="mock-action-buttons">
+                                    <button id="prev-btn" class="btn-secondary" disabled>Prev</button>
+                                    <button id="next-btn" class="btn-secondary" disabled>Next</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Result Card -->
+                        <div id="mock-result-card" class="mock-card" style="display:none;text-align:center;">
+                            <div class="score-wrapper">
+                                <h3 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px;">Exam Completed</h3>
+                                <p style="color:var(--text-secondary);font-size:0.875rem;">Here is your performance breakdown.</p>
+                                <div class="score-circle">
+                                    <span id="score-display-value" class="score-value">0</span>
+                                    <span class="score-label">Score</span>
+                                </div>
+                                <p id="score-evaluation" style="font-weight:700;font-size:1.1rem;color:var(--color-primary-light);">Needs Practice</p>
+                                <p id="score-subtext" style="color:var(--text-secondary);font-size:0.875rem;max-width:320px;margin:0 auto;line-height:1.6;">Keep revising and resolving doubts to improve your preparation level.</p>
+                                <button id="btn-restart-mock" class="btn-primary" style="max-width:220px;margin-top:8px;">Restart Quiz</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="app-toast"></div>
+
+<!-- Scripts -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

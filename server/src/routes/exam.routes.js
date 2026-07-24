@@ -1,9 +1,23 @@
-import {Router} from express;
-import { app } from "../../../app";
 import express from "express";
+import { 
+    setupExam, 
+    getStrategy, 
+    getChats, 
+    getDoubts, 
+    getMockTest, 
+    submitMockTestScore,
+    getExamsList
+} from "../controllers/exam.controller.js";
+import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
-// R1
+
+// Apply JWT verification middleware to all exam routes
+router.use(verifyJWT);
+
+router.route("/list").get(getExamsList);
+
 router.route("/setup").post(
     upload.fields([
         {
@@ -18,15 +32,14 @@ router.route("/setup").post(
             name: "attachment",
             maxCount: 3
         }
-    ]),setupexam
-    
+    ]),
+    setupExam
 );
-// R2
-router.route("/strategy/:examid")
-.get(getstrategycontent);
-// R3
-router.route("/chat/:examid").post(getchats);
-// R4
-router.route("/doubt/:examid").post(getdoubts);
-// R5
-router.route("/mock/:examid").get(getmocktest);
+
+router.route("/strategy/:examId").get(getStrategy);
+router.route("/chat/:examId").get(getChats);
+router.route("/doubt/:examId").post(getDoubts);
+router.route("/mock/:examId").get(getMockTest);
+router.route("/mock/:examId/submit").post(submitMockTestScore);
+
+export default router;

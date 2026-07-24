@@ -1,26 +1,23 @@
-import express from "express";
-import {Router} from "express";
+import { Router } from "express";
+import { 
+    registerUser, 
+    loginUser, 
+    guestLogin,
+    logoutUser, 
+    refreshAccessToken, 
+    getCurrentUser 
+} from "../controllers/user.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
+const router = Router();
 
-const router = Router()
-
-// main router reg 
-router.route("/register").post(
-    upload.fields([
-        {
-            name: "cover image",
-            maxCount: 1
-        },
-    ]),registerUser
-)
-
+router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
-// router.route("/logout").post(logout);
+router.route("/guest-login").post(guestLogin);
+router.route("/refresh-token").post(refreshAccessToken);
 
-// Secured routes 
+// Secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
-// Refresh and access token 
-router.route("/token").post()
+router.route("/me").get(verifyJWT, getCurrentUser);
 
-
-export default {router}
+export default router;
