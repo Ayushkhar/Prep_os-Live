@@ -335,4 +335,4 @@ This repository includes a pre-configured `render.yaml` manifest.
 
 **Suryansh Khare**  
 - GitHub: [https://github.com/Ayushkhar](https://github.com/Ayushkhar)
-- Live Portal: [prepos.suryanshkhare.online](https://prepos.suryanshkhare.online/)
+- Live Portal: [prep-os-live.onrender.com](https://prep-os-live.onrender.com)
