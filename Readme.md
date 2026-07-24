@@ -4,10 +4,7 @@
 
 - **Developer:** Suryansh Khare
 - **Backend Runtime:** Node.js (Express 5 + Socket.IO)
-- **AI Engine:** Groq (Llama 3.3 70B Versatile)
-- **Database:** MongoDB Atlas (Mongoose 9)
-- **File Storage:** Cloudinary + Local Disk Buffer
-- **Deployment Target:** Render
+
 
 ---
 
@@ -338,4 +335,4 @@ This repository includes a pre-configured `render.yaml` manifest.
 
 **Suryansh Khare**  
 - GitHub: [https://github.com/Ayushkhar](https://github.com/Ayushkhar)
-- Live Portal: [prep-os-live.onrender.com](https://prep-os-live.onrender.com)
+- Live Portal: [prepos.suryanshkhare.online](https://prepos.suryanshkhare.online)
