@@ -4,9 +4,8 @@
 
 - **Developer:** Suryansh Khare
 - **Backend Runtime:** Node.js (Express 5 + Socket.IO)
-
-
----
+- **Live on:** https://prep-os-live.onrender.com
+- **Deployed and Shipped with 24 x 7 running capability**
 
 ## System Architecture
 
@@ -335,4 +334,4 @@ This repository includes a pre-configured `render.yaml` manifest.
 
 **Suryansh Khare**  
 - GitHub: [https://github.com/Ayushkhar](https://github.com/Ayushkhar)
-- Live Portal: [prep-os-live.onrender.com](https://prep-os-live.onrender.com)
+- Live Portal: [prep-os-live.onrender.com](https://prepos.suryanshkhare.online)
