@@ -198,7 +198,7 @@ $("btn-logout").addEventListener("click", async () => {
 
 function enterDashboard() {
     $("auth-section").style.display = "none";
-    $("dashboard-section").style.display = "flex";
+    $("dashboard-section").style.display = "grid";
     $("user-display-name").innerText = currentUser.username;
     $("user-avatar").innerText = currentUser.username[0].toUpperCase();
     loadExamsList();

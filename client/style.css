@@ -267,7 +267,7 @@ textarea.form-control { resize: vertical; }
 }
 
 /* ── Main Content ── */
-.main-content { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.main-content { display: flex; flex-direction: column; height: 100vh; overflow: hidden; flex: 1; width: 100%; }
 
 .content-header {
   background: var(--bg-white);
