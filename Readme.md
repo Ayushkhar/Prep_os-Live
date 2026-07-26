@@ -12,11 +12,12 @@
 The following diagram illustrates the end-to-end data flow between the single-page frontend client, the Node.js/Express API layer, MongoDB storage, Cloudinary file pipeline, and the Groq LLM inference service.
 
 ```mermaid
+%%{init: { 'theme': 'base', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'Arial, sans-serif' } } }%%
 graph TD
-    subgraph Client ["Client Layer - Browser"]
-        UI["Single Page Web App"]
-        LocalStorage["localStorage / sessionStorage"]
-        SocketClient["Socket.IO Client"]
+    subgraph Client ["Client Layer — Browser"]
+        UI["Single Page Web App<br/>(HTML5 / CSS / JS)"]
+        LocalStorage["Browser Storage<br/>(localStorage / sessionStorage)"]
+        SocketClient["Socket.IO Client<br/>(Real-Time Gateway)"]
     end
 
     subgraph API ["Server & Processing Layer"]
@@ -28,17 +29,17 @@ graph TD
     end
 
     subgraph Data ["Database & Media Storage"]
-        MongoDB["MongoDB Atlas"]
-        Cloudinary["Cloudinary Storage"]
+        MongoDB["MongoDB Atlas<br/>(Database)"]
+        Cloudinary["Cloudinary Storage<br/>(Media Files)"]
     end
 
     subgraph AI ["AI Services"]
-        Groq["Groq SDK - Llama 3.3 70B"]
+        Groq["Groq SDK<br/>(Llama 3.3 70B Engine)"]
     end
 
     UI -->|"HTTP REST Requests"| Server
     UI -->|"WebSocket Events"| SocketServer
-    UI -->|"Persists Checkbox States"| LocalStorage
+    UI -->|"Persists Checkbox Progress"| LocalStorage
 
     Server --> AuthMW
     Server --> Multer
@@ -50,7 +51,19 @@ graph TD
 
     PDFParser -->|"Parsed Syllabus and Notes Text"| Server
     Server -->|"Strategy, Doubt, and Mock Prompts"| Groq
-    SocketServer -->|"Token Streaming Chat"| Groq
+    SocketServer -->|"Token Streaming Response"| Groq
+
+    style UI fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,font-size:16px,font-weight:bold;
+    style LocalStorage fill:#f1f5f9,stroke:#64748b,stroke-width:2px,font-size:15px;
+    style SocketClient fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,font-size:15px;
+    style Server fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:16px,font-weight:bold;
+    style SocketServer fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style AuthMW fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style Multer fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style PDFParser fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style MongoDB fill:#fff7ed,stroke:#ea580c,stroke-width:2px,font-size:16px,font-weight:bold;
+    style Cloudinary fill:#fff7ed,stroke:#ea580c,stroke-width:2px,font-size:15px;
+    style Groq fill:#faf5ff,stroke:#9333ea,stroke-width:2px,font-size:16px,font-weight:bold;
 ```
 
 ---

@@ -307,6 +307,7 @@ textarea.form-control { resize: vertical; }
 
 .page-panel { display: none; }
 .page-panel.active { display: block; }
+#page-setup.active { display: flex; justify-content: center; align-items: flex-start; }
 
 /* ── Loader ── */
 .loader-wrapper {
@@ -332,6 +333,7 @@ textarea.form-control { resize: vertical; }
 
 /* ── Setup Panel ── */
 .setup-layout {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   background: var(--bg-white);

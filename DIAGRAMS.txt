@@ -1,5 +1,5 @@
 ================================================================================
-DRAW.IO MERMAID CODES — PrepOS ARCHITECTURE FIGURES
+DRAW.IO MERMAID CODES — PrepOS ARCHITECTURE FIGURES (LARGE FONTS & STYLED)
 ================================================================================
 How to use in draw.io (app.diagrams.net):
 1. Open draw.io (https://app.diagrams.net)
@@ -9,13 +9,14 @@ How to use in draw.io (app.diagrams.net):
 
 
 --------------------------------------------------------------------------------
-FIGURE 1: SYSTEM ARCHITECTURE DIAGRAM
+FIGURE 1: SYSTEM ARCHITECTURE DIAGRAM (LARGE FONT & STYLED)
 --------------------------------------------------------------------------------
+%%{init: { 'theme': 'base', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'Arial, sans-serif' } } }%%
 graph TD
-    subgraph Client ["Client Layer - Browser"]
-        UI["Single Page Web App"]
-        LocalStorage["localStorage / sessionStorage"]
-        SocketClient["Socket.IO Client"]
+    subgraph Client ["Client Layer — Browser"]
+        UI["Single Page Web App<br/>(HTML5 / CSS / JS)"]
+        LocalStorage["Browser Storage<br/>(localStorage / sessionStorage)"]
+        SocketClient["Socket.IO Client<br/>(Real-Time Gateway)"]
     end
 
     subgraph API ["Server & Processing Layer"]
@@ -27,17 +28,17 @@ graph TD
     end
 
     subgraph Data ["Database & Media Storage"]
-        MongoDB["MongoDB Atlas"]
-        Cloudinary["Cloudinary Storage"]
+        MongoDB["MongoDB Atlas<br/>(Database)"]
+        Cloudinary["Cloudinary Storage<br/>(Media Files)"]
     end
 
     subgraph AI ["AI Services"]
-        Groq["Groq SDK - Llama 3.3 70B"]
+        Groq["Groq SDK<br/>(Llama 3.3 70B Engine)"]
     end
 
     UI -->|"HTTP REST Requests"| Server
     UI -->|"WebSocket Events"| SocketServer
-    UI -->|"Persists Checkbox States"| LocalStorage
+    UI -->|"Persists Checkbox Progress"| LocalStorage
 
     Server --> AuthMW
     Server --> Multer
@@ -49,15 +50,28 @@ graph TD
 
     PDFParser -->|"Parsed Syllabus and Notes Text"| Server
     Server -->|"Strategy, Doubt, and Mock Prompts"| Groq
-    SocketServer -->|"Token Streaming Chat"| Groq
+    SocketServer -->|"Token Streaming Response"| Groq
+
+    style UI fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,font-size:16px,font-weight:bold;
+    style LocalStorage fill:#f1f5f9,stroke:#64748b,stroke-width:2px,font-size:15px;
+    style SocketClient fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,font-size:15px;
+    style Server fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:16px,font-weight:bold;
+    style SocketServer fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style AuthMW fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style Multer fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style PDFParser fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,font-size:15px;
+    style MongoDB fill:#fff7ed,stroke:#ea580c,stroke-width:2px,font-size:16px,font-weight:bold;
+    style Cloudinary fill:#fff7ed,stroke:#ea580c,stroke-width:2px,font-size:15px;
+    style Groq fill:#faf5ff,stroke:#9333ea,stroke-width:2px,font-size:16px,font-weight:bold;
 
 
 --------------------------------------------------------------------------------
 FIGURE 2: USER AUTHENTICATION & GUEST LOGIN FLOW
 --------------------------------------------------------------------------------
+%%{init: { 'theme': 'base', 'themeVariables': { 'fontSize': '15px' } } }%%
 sequenceDiagram
     autonumber
-    actor User
+    actor User as User / Student
     participant Client as Web Browser
     participant API as Express Auth API
     participant DB as MongoDB Atlas
@@ -86,13 +100,14 @@ sequenceDiagram
 --------------------------------------------------------------------------------
 FIGURE 3: EXAM SETUP & STRATEGY FLOWCHART GENERATION PIPELINE
 --------------------------------------------------------------------------------
+%%{init: { 'theme': 'base', 'themeVariables': { 'fontSize': '15px' } } }%%
 sequenceDiagram
     autonumber
-    actor Student
+    actor Student as Student
     participant Client as Frontend Script
     participant API as Exam Setup Endpoint
     participant PDF as PDF/Text Parser
-    participant Cloud as Cloudinary
+    participant Cloud as Cloudinary Storage
     participant Groq as Groq AI Engine
     participant DB as MongoDB Atlas
 
@@ -116,9 +131,10 @@ sequenceDiagram
 --------------------------------------------------------------------------------
 FIGURE 4: REAL-TIME Q&A CHAT STREAMING WORKFLOW
 --------------------------------------------------------------------------------
+%%{init: { 'theme': 'base', 'themeVariables': { 'fontSize': '15px' } } }%%
 sequenceDiagram
     autonumber
-    actor Student
+    actor Student as Student
     participant UI as Chat Panel UI
     participant Gateway as Socket.IO Gateway
     participant DB as MongoDB Chat Collection
@@ -142,6 +158,7 @@ sequenceDiagram
 --------------------------------------------------------------------------------
 FIGURE 5: MOCK EXAM ENGINE STATE MACHINE
 --------------------------------------------------------------------------------
+%%{init: { 'theme': 'base', 'themeVariables': { 'fontSize': '15px' } } }%%
 stateDiagram-v2
     [*] --> Idle: Tab Activated
     Idle --> Loading: Fetch or Generate Mock Exam
